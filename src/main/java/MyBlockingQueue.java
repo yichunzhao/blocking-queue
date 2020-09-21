@@ -13,7 +13,8 @@ public class MyBlockingQueue<T> {
     //only one thread allow to put one element in the Q
     public synchronized void enqueue(T t) {
         if (queue.offer(t)) totalProduced++;
-        queue.notify();
+        //waking up a thread to offer
+        notify();
     }
 
     //only one thread allow to take one element from the Q
