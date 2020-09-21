@@ -13,7 +13,7 @@ public class Consumer implements Runnable {
             try {
                 log.info(myBlockingQueue.dequeue().toString());
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error("my Q dequeue", e);
             }
         }
     }
