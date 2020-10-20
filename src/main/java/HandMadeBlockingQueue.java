@@ -1,29 +1,31 @@
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.IntStream;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 public class HandMadeBlockingQueue {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         MyBlockingQueue<Integer> myQueue = MyBlockingQueue.create();
 
-        ExecutorService service = Executors.newFixedThreadPool(20);
+        Thread th1 = new Thread(Producer.of(myQueue));
+        Thread th2 = new Thread(Consumer.of(myQueue));
 
-        IntStream.range(0, 450).forEach(i -> service.submit(Producer.of(myQueue, i)));
-        IntStream.range(0, 10).forEach(i -> service.submit(Consumer.of(myQueue)));
+        List<Thread> threads = Arrays.asList(th1, th2);
 
-        service.shutdown();
-        service.awaitTermination(1000, TimeUnit.MILLISECONDS);
-        log.info("is terminated? " + service.isShutdown());
+        threads.forEach(thread -> thread.start());
 
-        log.info("total produced: " + myQueue.getTotalProduced());
-        log.info("total consumed: " + myQueue.getTotalConsumed());
+        threads.forEach(thread -> {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
 
-        System.exit(1);
+        log.info("Total consumed: " + myQueue.getTotalConsumed());
+        log.info("Total Produced: " + myQueue.getTotalProduced());
     }
 
 }

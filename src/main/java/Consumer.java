@@ -11,7 +11,9 @@ public class Consumer implements Runnable {
     public void run() {
         while (true) {
             try {
-                log.info(myBlockingQueue.dequeue().toString());
+                Integer iterm = myBlockingQueue.dequeue();
+                log.info("consumed: " + iterm);
+                if (iterm == Integer.MAX_VALUE) break;
             } catch (InterruptedException e) {
                 log.error("my Q dequeue", e);
             }

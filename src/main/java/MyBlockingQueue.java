@@ -11,16 +11,20 @@ public class MyBlockingQueue<T> {
     private int totalConsumed;
 
     //only one thread allow to put one element in the Q
-    public synchronized void enqueue(T t) {
+    public synchronized void enqueue(T t) throws InterruptedException {
+        if (queue.size() == 20) this.wait();
+
         if (queue.offer(t)) totalProduced++;
         //waking up a thread to offer
-        notify();
+        this.notifyAll();
     }
 
     //only one thread allow to take one element from the Q
     public synchronized T dequeue() throws InterruptedException {
-        if (queue.isEmpty()) wait();
+        if (queue.isEmpty()) this.wait();
+
         T polled = queue.poll();
+        this.notifyAll();
         totalConsumed++;
         return polled;
     }
