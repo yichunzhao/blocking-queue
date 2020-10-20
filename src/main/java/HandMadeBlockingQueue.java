@@ -20,7 +20,7 @@ public class HandMadeBlockingQueue {
             try {
                 thread.join();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error("join exception: ", e);
             }
         });
 
